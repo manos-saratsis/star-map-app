@@ -13,7 +13,7 @@ function App() {
   const { camera, pan, zoomAt, panTo } = useCamera();
   const [selectedStar, setSelectedStar] = useState<Star | null>(null);
 
-  const handleSelectFromSearch = (star: Star) => {
+  const handleSelectAndPan = (star: Star) => {
     setSelectedStar(star);
     panTo(star.x, star.y, Math.max(camera.zoom, 2.5));
   };
@@ -22,7 +22,7 @@ function App() {
     <div className="app-shell">
       <header className="app-header">
         <h1>Star Map</h1>
-        <SearchBar stars={stars} onSelectStar={handleSelectFromSearch} />
+        <SearchBar stars={stars} onSelectStar={handleSelectAndPan} />
       </header>
 
       <main className="app-main">
@@ -35,7 +35,12 @@ function App() {
           onZoom={zoomAt}
         />
         <ConstellationLegend />
-        <StarInfoPanel star={selectedStar} onClose={() => setSelectedStar(null)} />
+        <StarInfoPanel
+          star={selectedStar}
+          stars={stars}
+          onClose={() => setSelectedStar(null)}
+          onSelectStar={handleSelectAndPan}
+        />
       </main>
     </div>
   );
