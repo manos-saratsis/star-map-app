@@ -5,8 +5,8 @@ import { hitTestStar, magnitudeToRadius, worldToScreen } from '../utils/projecti
 interface StarMapCanvasProps {
   stars: Star[];
   camera: Camera;
-  selectedStar: Star | null;
-  onSelectStar: (star: Star | null) => void;
+  selectedStars: Star[];
+  onSelectStar: (star: Star, shiftKey: boolean) => void;
   onPan: (dx: number, dy: number) => void;
   onZoom: (factor: number) => void;
 }
@@ -24,7 +24,7 @@ const SPECTRAL_COLORS: Record<Star['spectralClass'], string> = {
 export function StarMapCanvas({
   stars,
   camera,
-  selectedStar,
+  selectedStars,
   onSelectStar,
   onPan,
   onZoom,
@@ -48,6 +48,8 @@ export function StarMapCanvas({
     ctx.fillStyle = '#05070f';
     ctx.fillRect(0, 0, width, height);
 
+    const selectedIds = new Set(selectedStars.map((s) => s.id));
+
     for (const star of stars) {
       const p = worldToScreen(star.x, star.y, camera, width, height);
       if (p.x < -10 || p.x > width + 10 || p.y < -10 || p.y > height + 10) continue;
@@ -58,7 +60,7 @@ export function StarMapCanvas({
       ctx.fillStyle = SPECTRAL_COLORS[star.spectralClass];
       ctx.fill();
 
-      if (selectedStar?.id === star.id) {
+      if (selectedIds.has(star.id)) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius + 6, 0, Math.PI * 2);
         ctx.strokeStyle = '#38bdf8';
@@ -66,7 +68,7 @@ export function StarMapCanvas({
         ctx.stroke();
       }
     }
-  }, [stars, camera, selectedStar]);
+  }, [stars, camera, selectedStars]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     isDragging.current = true;
@@ -92,7 +94,7 @@ export function StarMapCanvas({
     const sx = e.clientX - rect.left;
     const sy = e.clientY - rect.top;
     const hit = hitTestStar(sx, sy, stars, camera, rect.width, rect.height);
-    if (hit) onSelectStar(hit);
+    if (hit) onSelectStar(hit, e.shiftKey);
   };
 
   const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
