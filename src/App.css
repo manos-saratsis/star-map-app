@@ -86,6 +86,32 @@
   color: #64748b;
 }
 
+.magnitude-slider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  font-size: 13px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.magnitude-slider label {
+  min-width: 118px;
+}
+
+.magnitude-slider input[type='range'] {
+  width: 140px;
+  accent-color: #38bdf8;
+}
+
+.magnitude-count {
+  color: #64748b;
+  min-width: 108px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 .constellation-legend {
   position: absolute;
   top: 16px;
