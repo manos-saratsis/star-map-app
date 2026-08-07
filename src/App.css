@@ -151,6 +151,36 @@
   color: #64748b;
 }
 
+.star-info-panel--multi {
+  min-width: 320px;
+  max-width: 460px;
+}
+
+.star-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.star-comparison-table th,
+.star-comparison-table td {
+  text-align: left;
+  padding: 6px 10px 6px 0;
+  border-bottom: 1px solid #1e293b;
+}
+
+.star-comparison-table th {
+  color: #64748b;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.star-comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 .close-button {
   position: absolute;
   top: 8px;
