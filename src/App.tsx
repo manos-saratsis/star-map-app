@@ -1,17 +1,27 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StarMapCanvas } from './components/StarMapCanvas';
 import { SearchBar } from './components/SearchBar';
 import { StarInfoPanel } from './components/StarInfoPanel';
 import { ConstellationLegend } from './components/ConstellationLegend';
+import { MagnitudeSlider } from './components/MagnitudeSlider';
 import { useStarData } from './hooks/useStarData';
 import { useCamera } from './hooks/useCamera';
 import type { Star } from './types';
 import './App.css';
 
+const MIN_MAGNITUDE = 0.5;
+const MAX_MAGNITUDE = 7;
+
 function App() {
   const stars = useStarData(4000);
   const { camera, pan, zoomAt, panTo } = useCamera();
   const [selectedStar, setSelectedStar] = useState<Star | null>(null);
+  const [magnitudeThreshold, setMagnitudeThreshold] = useState(MAX_MAGNITUDE);
+
+  const visibleStars = useMemo(
+    () => stars.filter((s) => s.magnitude <= magnitudeThreshold),
+    [stars, magnitudeThreshold]
+  );
 
   const handleSelectFromSearch = (star: Star) => {
     setSelectedStar(star);
@@ -22,12 +32,20 @@ function App() {
     <div className="app-shell">
       <header className="app-header">
         <h1>Star Map</h1>
-        <SearchBar stars={stars} onSelectStar={handleSelectFromSearch} />
+        <SearchBar stars={visibleStars} onSelectStar={handleSelectFromSearch} />
+        <MagnitudeSlider
+          value={magnitudeThreshold}
+          min={MIN_MAGNITUDE}
+          max={MAX_MAGNITUDE}
+          visibleCount={visibleStars.length}
+          totalCount={stars.length}
+          onChange={setMagnitudeThreshold}
+        />
       </header>
 
       <main className="app-main">
         <StarMapCanvas
-          stars={stars}
+          stars={visibleStars}
           camera={camera}
           selectedStar={selectedStar}
           onSelectStar={setSelectedStar}
