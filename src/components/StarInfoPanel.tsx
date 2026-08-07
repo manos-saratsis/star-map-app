@@ -2,12 +2,48 @@ import type { Star } from '../types';
 import { getConstellation } from '../data/constellations';
 
 interface StarInfoPanelProps {
-  star: Star | null;
+  stars: Star[];
   onClose: () => void;
 }
 
-export function StarInfoPanel({ star, onClose }: StarInfoPanelProps) {
-  if (!star) return null;
+export function StarInfoPanel({ stars, onClose }: StarInfoPanelProps) {
+  if (stars.length === 0) return null;
+
+  if (stars.length > 1) {
+    return (
+      <div className="star-info-panel star-info-panel--multi">
+        <button className="close-button" onClick={onClose} aria-label="Close">
+          ×
+        </button>
+        <h2>{stars.length} stars selected</h2>
+        <table className="star-comparison-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Magnitude</th>
+              <th>Constellation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stars.map((star) => {
+              const constellation = getConstellation(star.constellationId);
+              return (
+                <tr key={star.id}>
+                  <td>{star.name ?? star.catalogId}</td>
+                  <td>{star.magnitude}</td>
+                  <td style={{ color: constellation?.color }}>
+                    {constellation?.name ?? 'Unknown'}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  const star = stars[0];
   const constellation = getConstellation(star.constellationId);
 
   return (
