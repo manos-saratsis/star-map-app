@@ -9,6 +9,7 @@ interface StarMapCanvasProps {
   onSelectStar: (star: Star | null) => void;
   onPan: (dx: number, dy: number) => void;
   onZoom: (factor: number) => void;
+  activeConstellationId?: string | null;
 }
 
 const SPECTRAL_COLORS: Record<Star['spectralClass'], string> = {
@@ -28,6 +29,7 @@ export function StarMapCanvas({
   onSelectStar,
   onPan,
   onZoom,
+  activeConstellationId = null,
 }: StarMapCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDragging = useRef(false);
@@ -53,10 +55,15 @@ export function StarMapCanvas({
       if (p.x < -10 || p.x > width + 10 || p.y < -10 || p.y > height + 10) continue;
 
       const radius = magnitudeToRadius(star.magnitude) * Math.min(1.6, camera.zoom);
+      const isDimmed =
+        activeConstellationId !== null && star.constellationId !== activeConstellationId;
+
       ctx.beginPath();
       ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+      ctx.globalAlpha = isDimmed ? 0.15 : 1;
       ctx.fillStyle = SPECTRAL_COLORS[star.spectralClass];
       ctx.fill();
+      ctx.globalAlpha = 1;
 
       if (selectedStar?.id === star.id) {
         ctx.beginPath();
@@ -66,7 +73,7 @@ export function StarMapCanvas({
         ctx.stroke();
       }
     }
-  }, [stars, camera, selectedStar]);
+  }, [stars, camera, selectedStar, activeConstellationId]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     isDragging.current = true;
@@ -112,4 +119,3 @@ export function StarMapCanvas({
     />
   );
 }
-
