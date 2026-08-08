@@ -12,10 +12,15 @@ function App() {
   const stars = useStarData(4000);
   const { camera, pan, zoomAt, panTo } = useCamera();
   const [selectedStar, setSelectedStar] = useState<Star | null>(null);
+  const [activeConstellationId, setActiveConstellationId] = useState<string | null>(null);
 
   const handleSelectFromSearch = (star: Star) => {
     setSelectedStar(star);
     panTo(star.x, star.y, Math.max(camera.zoom, 2.5));
+  };
+
+  const handleToggleConstellation = (id: string) => {
+    setActiveConstellationId((current) => (current === id ? null : id));
   };
 
   return (
@@ -33,8 +38,12 @@ function App() {
           onSelectStar={setSelectedStar}
           onPan={pan}
           onZoom={zoomAt}
+          activeConstellationId={activeConstellationId}
         />
-        <ConstellationLegend />
+        <ConstellationLegend
+          activeConstellationId={activeConstellationId}
+          onToggleConstellation={handleToggleConstellation}
+        />
         <StarInfoPanel star={selectedStar} onClose={() => setSelectedStar(null)} />
       </main>
     </div>
